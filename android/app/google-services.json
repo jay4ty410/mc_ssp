@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "675245868939",
+    "project_id": "mc-ssp-63e5b",
+    "storage_bucket": "mc-ssp-63e5b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:675245868939:android:94e8e496ab4504fd18918e",
+        "android_client_info": {
+          "package_name": "com.android.application"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYqSxisMcYCXeCzcy_6GLjXObNVSbcqBY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:675245868939:android:bab09b4adda1d30d18918e",
+        "android_client_info": {
+          "package_name": "com.example.mc_ssp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYqSxisMcYCXeCzcy_6GLjXObNVSbcqBY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

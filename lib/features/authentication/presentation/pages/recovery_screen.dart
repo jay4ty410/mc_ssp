@@ -135,9 +135,9 @@ class _RecoveryScreenState extends State<RecoveryScreen> {
       children: [
         // TODO: Ensure this asset is registered in pubspec.yaml:
         //   assets:
-        //     - assets/image/register01.png
+        //     - assets/images/register01.png
         Image.asset(
-          'assets/image/register01.png',
+          'assets/images/register01.png',
           height: 48,
           width: 48,
           errorBuilder: (context, error, stackTrace) {
@@ -154,33 +154,6 @@ class _RecoveryScreenState extends State<RecoveryScreen> {
           },
         ),
         const SizedBox(width: 10),
-        RichText(
-          text: TextSpan(
-            style: const TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w800,
-              fontFamily: 'Roboto',
-              color: _navyDark,
-            ),
-            children: [
-              const TextSpan(text: 'MC'),
-              TextSpan(
-                text: '_SS',
-                style: TextStyle(color: _primaryBlue),
-              ),
-              const TextSpan(text: '\n'),
-              const TextSpan(
-                text: 'Smart Scheduler',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic,
-                  color: _mutedGray,
-                ),
-              ),
-            ],
-          ),
-        ),
       ],
     );
   }

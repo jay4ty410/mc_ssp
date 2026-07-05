@@ -117,16 +117,8 @@ class _RecoveryScreenState extends State<RecoveryScreen> {
   // ---------------------------------------------------------------------
 
   Widget _buildBackButton() {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: IconButton(
-        onPressed: _handleBackToSignIn,
-        icon: const Icon(Icons.arrow_back, color: _navyDark, size: 26),
-        padding: EdgeInsets.zero,
-        constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-        splashRadius: 22,
-      ),
-    );
+    // Back arrow removed per UI update. Preserve spacing by returning an empty box.
+    return const SizedBox.shrink();
   }
 
   Widget _buildLogoHeader() {

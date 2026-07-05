@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'register_screen.dart';
+import 'recovery_screen.dart';
 import 'home_screen.dart';
 
 /// Primary brand blue used across buttons and links.
@@ -192,7 +193,9 @@ class _LoginScreenState extends State<LoginScreen> {
             alignment: Alignment.centerRight,
             child: TextButton(
               onPressed: () {
-                // TODO: Implement forgot-password navigation/flow.
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const RecoveryScreen()),
+                );
               },
               style: TextButton.styleFrom(
                 padding: EdgeInsets.zero,

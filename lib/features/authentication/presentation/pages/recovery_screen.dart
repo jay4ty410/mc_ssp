@@ -130,8 +130,8 @@ class _RecoveryScreenState extends State<RecoveryScreen> {
         //     - assets/images/register01.png
         Image.asset(
           'assets/images/register01.png',
-          height: 48,
-          width: 48,
+          height: 120,
+          //width: 48,
           errorBuilder: (context, error, stackTrace) {
             // Graceful fallback if the asset isn't registered/found yet.
             return Container(

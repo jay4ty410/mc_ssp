@@ -71,8 +71,8 @@ class _SplashScreenState extends State<SplashScreen>
       if (mounted) {
         Navigator.of(context).pushReplacement(
           PageRouteBuilder(
-            pageBuilder: (_, __, ___) => const LoginScreen(),
-            transitionsBuilder: (_, animation, __, child) =>
+            pageBuilder: (_, _, _) => const LoginScreen(),
+            transitionsBuilder: (_, animation, _, child) =>
                 FadeTransition(opacity: animation, child: child),
             transitionDuration: const Duration(milliseconds: 500),
           ),
@@ -206,7 +206,7 @@ class _LogoWidget extends StatelessWidget {
                 border: Border.all(color: const Color(0xFF29B6F6), width: 3.5),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF29B6F6).withOpacity(0.3),
+                    color: const Color(0xFF29B6F6).withValues(alpha: 0.3),
                     blurRadius: 12,
                     spreadRadius: 2,
                   ),
@@ -227,7 +227,7 @@ class _LogoWidget extends StatelessWidget {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF1565C0).withOpacity(0.15),
+                    color: const Color(0xFF1565C0).withValues(alpha: 0.15),
                     blurRadius: 12,
                     offset: const Offset(2, 4),
                   ),
@@ -256,7 +256,7 @@ class _LogoWidget extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF1565C0).withOpacity(0.45),
+                    color: const Color(0xFF1565C0).withValues(alpha: 0.45),
                     blurRadius: 18,
                     offset: const Offset(0, 6),
                   ),
@@ -381,7 +381,7 @@ class _CalendarCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: isCheck
                 ? const Color(0xFF42A5F5)
-                : Colors.white.withOpacity(0.2),
+                : Colors.white.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(6),
           ),
           child: isCheck
@@ -479,7 +479,7 @@ class _PaginationDots extends StatelessWidget {
           width: 9,
           height: 9,
           decoration: BoxDecoration(
-            color: const Color(0xFF90CAF9).withOpacity(0.5),
+            color: const Color(0xFF90CAF9).withValues(alpha: 0.5),
             shape: BoxShape.circle,
           ),
         ),
@@ -573,7 +573,7 @@ class _WavePainter extends CustomPainter {
 
     wave(
       Paint()
-        ..color = const Color(0xFF64B5F6).withOpacity(0.45)
+        ..color = const Color(0xFF64B5F6).withValues(alpha: 0.45)
         ..style = PaintingStyle.fill,
       0.50,
       0.32,
@@ -583,7 +583,7 @@ class _WavePainter extends CustomPainter {
 
     wave(
       Paint()
-        ..color = const Color(0xFF1E88E5).withOpacity(0.72)
+        ..color = const Color(0xFF1E88E5).withValues(alpha: 0.72)
         ..style = PaintingStyle.fill,
       0.62,
       0.45,
@@ -651,14 +651,14 @@ class _GlassIcon extends StatelessWidget {
       width: 52,
       height: 52,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.12),
+        color: Colors.white.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(13),
-        border: Border.all(color: Colors.white.withOpacity(0.28), width: 1),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.28), width: 1),
       ),
       child: Icon(
         icon,
         size: 28,
-        color: const Color(0xFF1565C0).withOpacity(0.82),
+        color: const Color(0xFF1565C0).withValues(alpha: 0.82),
       ),
     );
   }

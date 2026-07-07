@@ -392,7 +392,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: _filters.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 10),
+        separatorBuilder: (_, _) => const SizedBox(width: 10),
         itemBuilder: (context, index) {
           final filter = _filters[index];
           final isSelected = filter == _selectedFilter;
@@ -465,7 +465,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
             backgroundColor: AppColors.primaryBlue,
             foregroundColor: Colors.white,
             elevation: 4,
-            shadowColor: AppColors.primaryBlue.withOpacity(0.4),
+            shadowColor: AppColors.primaryBlue.withValues(alpha: 0.4),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(28),
             ),
@@ -678,7 +678,7 @@ class TaskCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),

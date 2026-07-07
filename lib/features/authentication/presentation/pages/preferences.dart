@@ -132,21 +132,21 @@ class PreferencesPage extends StatefulWidget {
 class _PreferencesPageState extends State<PreferencesPage> {
   // --- General ---
   int _themeIndex = 0; // 0 = Light, 1 = Dark, 2 = System
-  String _language = 'English';
-  String _timeFormat = '12-hour (AM/PM)';
-  String _firstDayOfWeek = 'Monday';
+  final String _language = 'English';
+  final String _timeFormat = '12-hour (AM/PM)';
+  final String _firstDayOfWeek = 'Monday';
 
   // --- Tasks & Calendar ---
-  String _defaultTaskView = 'List View';
+  final String _defaultTaskView = 'List View';
   bool _autoAddTasksToCalendar = true;
   bool _dueDateReminders = true;
   bool _markTasksAsCompletedSound = true;
   bool _hideCompletedTasks = false;
 
   // --- Display ---
-  String _displayDensity = 'Comfortable';
-  String _calendarView = 'Week View';
-  String _colorPreference = 'Vibrant';
+  final String _displayDensity = 'Comfortable';
+  final String _calendarView = 'Week View';
+  final String _colorPreference = 'Vibrant';
 
   // --- Data & Sync ---
   bool _syncAcrossDevices = true;

@@ -114,7 +114,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           width: 44,
           height: 44,
           decoration: BoxDecoration(
-            color: kAiAccent.withOpacity(0.12),
+            color: kAiAccent.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(14),
           ),
           child: Icon(
@@ -134,14 +134,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     return _buildSectionCard(
       headerIcon: Icons.notifications_active_rounded,
       headerIconColor: kAiAccent,
-      headerIconBg: kAiAccent.withOpacity(0.12),
+      headerIconBg: kAiAccent.withValues(alpha: 0.12),
       title: 'Notification Preferences',
       subtitle: 'Choose what notifications you want to receive',
       children: [
         _buildSwitchRow(
           icon: Icons.assignment_outlined,
           iconColor: kPrimaryBlue,
-          iconBg: kPrimaryBlue.withOpacity(0.10),
+          iconBg: kPrimaryBlue.withValues(alpha: 0.10),
           title: 'Task Assignments',
           subtitle: 'When you\'re assigned a new task',
           value: _taskAssignments,
@@ -151,7 +151,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         _buildSwitchRow(
           icon: Icons.update_rounded,
           iconColor: kSuccess,
-          iconBg: kSuccess.withOpacity(0.10),
+          iconBg: kSuccess.withValues(alpha: 0.10),
           title: 'Task Updates',
           subtitle: 'When a task status changes',
           value: _taskUpdates,
@@ -161,7 +161,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         _buildSwitchRow(
           icon: Icons.alarm_rounded,
           iconColor: kWarning,
-          iconBg: kWarning.withOpacity(0.16),
+          iconBg: kWarning.withValues(alpha: 0.16),
           title: 'Task Reminders',
           subtitle: 'Reminders before deadlines',
           value: _taskReminders,
@@ -171,7 +171,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         _buildSwitchRow(
           icon: Icons.error_outline_rounded,
           iconColor: kAiAccent,
-          iconBg: kAiAccent.withOpacity(0.12),
+          iconBg: kAiAccent.withValues(alpha: 0.12),
           title: 'Overdue Alerts',
           subtitle: 'When a task passes its due date',
           value: _overdueAlerts,
@@ -181,7 +181,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         _buildSwitchRow(
           icon: Icons.chat_bubble_outline_rounded,
           iconColor: kInfo,
-          iconBg: kInfo.withOpacity(0.10),
+          iconBg: kInfo.withValues(alpha: 0.10),
           title: 'Messages',
           subtitle: 'New direct messages and replies',
           value: _messages,
@@ -191,7 +191,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         _buildSwitchRow(
           icon: Icons.groups_outlined,
           iconColor: kAiAccent,
-          iconBg: kAiAccent.withOpacity(0.12),
+          iconBg: kAiAccent.withValues(alpha: 0.12),
           title: 'Team Updates',
           subtitle: 'Announcements from your team',
           value: _teamUpdates,
@@ -213,7 +213,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         _buildNavigationRow(
           icon: Icons.email_outlined,
           iconColor: kPrimaryBlue,
-          iconBg: kPrimaryBlue.withOpacity(0.10),
+          iconBg: kPrimaryBlue.withValues(alpha: 0.10),
           title: 'Email Notifications',
           trailingText: _userEmail,
           onTap: () {},
@@ -222,7 +222,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         _buildNavigationRow(
           icon: Icons.phone_iphone_rounded,
           iconColor: kSuccess,
-          iconBg: kSuccess.withOpacity(0.10),
+          iconBg: kSuccess.withValues(alpha: 0.10),
           title: 'Push Notifications',
           onTap: () {},
         ),
@@ -242,7 +242,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         _buildSwitchRow(
           icon: Icons.dark_mode_outlined,
           iconColor: kAiAccent,
-          iconBg: kAiAccent.withOpacity(0.12),
+          iconBg: kAiAccent.withValues(alpha: 0.12),
           title: 'Quiet Hours',
           subtitle: 'Pause non-urgent notifications',
           value: _quietHoursEnabled,
@@ -372,7 +372,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       borderRadius: BorderRadius.circular(20),
       boxShadow: [
         BoxShadow(
-          color: kPrimaryText.withOpacity(0.04),
+          color: kPrimaryText.withValues(alpha: 0.04),
           blurRadius: 16,
           offset: const Offset(0, 4),
         ),

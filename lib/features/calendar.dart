@@ -455,7 +455,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
                           sliver: SliverList.separated(
                             itemCount: _selectedDayEvents.length,
-                            separatorBuilder: (_, __) =>
+                            separatorBuilder: (_, _) =>
                                 const SizedBox(height: 12),
                             itemBuilder: (context, index) {
                               return _EventCard(

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
+import 'package:mc_ssp/core/widgets/app_theme.dart';
 
 /// The core surface/container used throughout MC_SS Smart Scheduler —
 /// mirrors the "Today's Schedule" and "AI Suggestions" panels in the

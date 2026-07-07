@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
+import 'package:mc_ssp/core/widgets/app_theme.dart';
 
 /// Visual style of a [CustomButton].
 enum CustomButtonVariant {

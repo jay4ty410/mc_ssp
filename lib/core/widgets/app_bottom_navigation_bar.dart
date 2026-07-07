@@ -57,7 +57,7 @@ class AppBottomNavigationBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border(
-          top: BorderSide(color: Colors.grey.withOpacity(0.08), width: 1),
+          top: BorderSide(color: Colors.grey.withValues(alpha: 0.08), width: 1),
         ),
       ),
       child: SafeArea(
@@ -131,7 +131,7 @@ class _NavBarItem extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
-        splashColor: activeColor.withOpacity(0.08),
+        splashColor: activeColor.withValues(alpha: 0.08),
         highlightColor: Colors.transparent,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
@@ -179,7 +179,9 @@ class _CenterActionButton extends StatelessWidget {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: AppBottomNavigationBar._activeColor.withOpacity(0.35),
+                  color: AppBottomNavigationBar._activeColor.withValues(
+                    alpha: 0.35,
+                  ),
                   blurRadius: 14,
                   spreadRadius: 1,
                   offset: const Offset(0, 6),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
+import 'package:mc_ssp/core/widgets/app_theme.dart';
 
 /// A clean, modern input field matching the MC_SS Smart Scheduler
 /// aesthetic: soft rounded fills that darken subtly on focus, with
@@ -89,19 +89,23 @@ class _CustomTextFieldState extends State<CustomTextField> {
     final fillColor = !widget.enabled
         ? tokens.secondaryBackground.withValues(alpha: 0.5)
         : _hasFocus
-            ? tokens.secondaryBackground
-            : tokens.secondaryBackground.withValues(alpha: 0.7);
+        ? tokens.secondaryBackground
+        : tokens.secondaryBackground.withValues(alpha: 0.7);
 
     final borderColor = hasError
         ? tokens.error
         : _hasFocus
-            ? theme.colorScheme.primary
-            : Colors.transparent;
+        ? theme.colorScheme.primary
+        : Colors.transparent;
 
     Widget? suffix;
     if (widget.suffixIcon != null) {
       suffix = IconButton(
-        icon: Icon(widget.suffixIcon, size: 20, color: theme.colorScheme.onSurfaceVariant),
+        icon: Icon(
+          widget.suffixIcon,
+          size: 20,
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
         onPressed: widget.onSuffixIconTap,
       );
     } else if (widget.obscureText) {
@@ -121,7 +125,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
         if (widget.label != null) ...[
           Text(
             widget.label!,
-            style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.onSurface),
+            style: theme.textTheme.labelLarge?.copyWith(
+              color: theme.colorScheme.onSurface,
+            ),
           ),
           const SizedBox(height: 8),
         ],
@@ -154,12 +160,19 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 color: theme.colorScheme.onSurfaceVariant,
               ),
               prefixIcon: widget.prefixIcon != null
-                  ? Icon(widget.prefixIcon, size: 20, color: theme.colorScheme.onSurfaceVariant)
+                  ? Icon(
+                      widget.prefixIcon,
+                      size: 20,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    )
                   : null,
               suffixIcon: suffix,
               filled: false,
               isDense: true,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 15,
+              ),
               border: InputBorder.none,
               enabledBorder: InputBorder.none,
               focusedBorder: InputBorder.none,
@@ -176,7 +189,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
             child: Text(
               hasError ? widget.errorText! : widget.helperText!,
               style: theme.textTheme.bodySmall?.copyWith(
-                color: hasError ? tokens.error : theme.colorScheme.onSurfaceVariant,
+                color: hasError
+                    ? tokens.error
+                    : theme.colorScheme.onSurfaceVariant,
               ),
             ),
           ),

@@ -17,6 +17,11 @@
 // No third-party packages are used; only standard Material widgets.
 
 import 'package:flutter/material.dart';
+import 'package:mc_ssp/core/widgets/app_bottom_navigation_bar.dart';
+import 'package:mc_ssp/features/authentication/presentation/pages/home_screen.dart'
+    show HomeScreen;
+import 'package:mc_ssp/features/calendar.dart' show CalendarScreen;
+import 'package:mc_ssp/features/task_list.dart' show TaskListScreen;
 
 // -----------------------------------------------------------------------
 // THEME — AppColorsExt
@@ -144,8 +149,11 @@ class AppColorsExt extends ThemeExtension<AppColorsExt> {
   AppColorsExt lerp(ThemeExtension<AppColorsExt>? other, double t) {
     if (other is! AppColorsExt) return this;
     return AppColorsExt(
-      scaffoldBackground:
-          Color.lerp(scaffoldBackground, other.scaffoldBackground, t)!,
+      scaffoldBackground: Color.lerp(
+        scaffoldBackground,
+        other.scaffoldBackground,
+        t,
+      )!,
       cardBackground: Color.lerp(cardBackground, other.cardBackground, t)!,
       divider: Color.lerp(divider, other.divider, t)!,
       primary: Color.lerp(primary, other.primary, t)!,
@@ -344,6 +352,57 @@ class SecurityScreen extends StatelessWidget {
     ];
   }
 
+  void _navigateToTab(BuildContext context, int index) {
+    if (index == 3) return;
+
+    final Widget screen = switch (index) {
+      0 => const HomeScreen(),
+      1 => const CalendarScreen(),
+      2 => const TaskListScreen(),
+      _ => const SecurityScreen(),
+    };
+
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => screen));
+  }
+
+  void _showQuickAddModal(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+            child: Row(
+              children: [
+                Expanded(
+                  child: _QuickAddOption(
+                    icon: Icons.event_rounded,
+                    label: 'Event',
+                    onTap: () => Navigator.of(context).pop(),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _QuickAddOption(
+                    icon: Icons.check_circle_rounded,
+                    label: 'Task',
+                    onTap: () => Navigator.of(context).pop(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -354,7 +413,7 @@ class SecurityScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            _SecurityAppBar(onBack: () => Navigator.of(context).maybePop()),
+            _SecurityAppBar(onBack: () => Navigator.of(context).pop()),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
@@ -373,12 +432,11 @@ class SecurityScreen extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: const _SecurityBottomNavBar(),
-      floatingActionButton: _SecurityFab(
-        // TODO: wire up quick-add action.
-        onPressed: () {},
+      bottomNavigationBar: AppBottomNavigationBar(
+        currentIndex: 3,
+        onTap: (index) => _navigateToTab(context, index),
+        onCenterTap: () => _showQuickAddModal(context),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }
@@ -422,10 +480,7 @@ class _SecurityAppBar extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     'Manage your account security and privacy',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: colors.textSecondary,
-                    ),
+                    style: TextStyle(fontSize: 13, color: colors.textSecondary),
                   ),
                 ],
               ),
@@ -642,6 +697,47 @@ class _StatusBadge extends StatelessWidget {
   }
 }
 
+class _QuickAddOption extends StatelessWidget {
+  const _QuickAddOption({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: const Color(0xFFEAF1FF),
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 18),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: const Color(0xFF2F6BFF), size: 28),
+              const SizedBox(height: 8),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Color(0xFF2F6BFF),
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 // -----------------------------------------------------------------------
 // NEED HELP CARD
 // -----------------------------------------------------------------------
@@ -689,10 +785,7 @@ class _NeedHelpCard extends StatelessWidget {
             style: OutlinedButton.styleFrom(
               foregroundColor: colors.primary,
               side: BorderSide(color: colors.primary),
-              padding: const EdgeInsets.symmetric(
-                horizontal: 18,
-                vertical: 12,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -708,11 +801,7 @@ class _NeedHelpCard extends StatelessWidget {
           if (constraints.maxWidth < 380) {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                textColumn,
-                const SizedBox(height: 14),
-                button,
-              ],
+              children: [textColumn, const SizedBox(height: 14), button],
             );
           }
 
@@ -726,188 +815,6 @@ class _NeedHelpCard extends StatelessWidget {
           );
         },
       ),
-    );
-  }
-}
-
-// -----------------------------------------------------------------------
-// FAB
-// -----------------------------------------------------------------------
-
-class _SecurityFab extends StatelessWidget {
-  const _SecurityFab({required this.onPressed});
-
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.appColors;
-
-    return FloatingActionButton(
-      onPressed: onPressed,
-      backgroundColor: colors.primary,
-      elevation: 3,
-      shape: const CircleBorder(),
-      child: const Icon(Icons.add, color: Colors.white, size: 28),
-    );
-  }
-}
-
-// -----------------------------------------------------------------------
-// BOTTOM NAVIGATION BAR
-// -----------------------------------------------------------------------
-// Standalone fallback implementation. If `app_bottom_navigation_bar.dart`
-// already exists in the project, prefer that shared widget instead — it
-// already encodes the "center FAB outside the tab index system" rule
-// (Tasks/Profile at indices 2/3 of a four-item array, center dock handled
-// via `onCenterTap`). This local copy mirrors that same layout so the
-// screen still renders correctly if dropped in on its own.
-
-class _SecurityBottomNavBar extends StatelessWidget {
-  const _SecurityBottomNavBar();
-
-  // "Profile" is the active tab on this screen.
-  static const int _activeIndex = 3;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.appColors;
-
-    const items = [
-      (icon: Icons.home_outlined, activeIcon: Icons.home, label: 'Home'),
-      (
-        icon: Icons.calendar_today_outlined,
-        activeIcon: Icons.calendar_today,
-        label: 'Calendar',
-      ),
-      (
-        icon: Icons.checklist_outlined,
-        activeIcon: Icons.checklist,
-        label: 'Tasks',
-      ),
-      (
-        icon: Icons.person_outline,
-        activeIcon: Icons.person,
-        label: 'Profile',
-      ),
-    ];
-
-    return BottomAppBar(
-      shape: const CircularNotchedRectangle(),
-      notchMargin: 8,
-      color: colors.cardBackground,
-      surfaceTintColor: colors.cardBackground,
-      child: SizedBox(
-        height: 62,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            for (int i = 0; i < items.length; i++)
-              if (i == 2)
-                // Leave a gap for the notched FAB between Calendar/Tasks.
-                Row(
-                  children: [
-                    const SizedBox(width: 48),
-                    _NavBarItem(
-                      item: items[i],
-                      isActive: i == _activeIndex,
-                      colors: colors,
-                      // TODO: wire up navigation to Tasks.
-                      onTap: () {},
-                    ),
-                  ],
-                )
-              else
-                _NavBarItem(
-                  item: items[i],
-                  isActive: i == _activeIndex,
-                  colors: colors,
-                  // TODO: wire up navigation for this tab.
-                  onTap: () {},
-                ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _NavBarItem extends StatelessWidget {
-  const _NavBarItem({
-    required this.item,
-    required this.isActive,
-    required this.colors,
-    required this.onTap,
-  });
-
-  final ({IconData icon, IconData activeIcon, String label}) item;
-  final bool isActive;
-  final AppColorsExt colors;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = isActive ? colors.primary : colors.textSecondary;
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(isActive ? item.activeIcon : item.icon, color: color, size: 24),
-            const SizedBox(height: 2),
-            Text(
-              item.label,
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-                color: color,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// -----------------------------------------------------------------------
-// STANDALONE ENTRY POINT (safe to delete once wired into the real app)
-// -----------------------------------------------------------------------
-
-void main() => runApp(const _SecurityDemoApp());
-
-class _SecurityDemoApp extends StatelessWidget {
-  const _SecurityDemoApp();
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.light,
-        scaffoldBackgroundColor: AppColorsExt.light.scaffoldBackground,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColorsExt.light.primary,
-          brightness: Brightness.light,
-        ),
-        extensions: const [AppColorsExt.light],
-      ),
-      darkTheme: ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: AppColorsExt.dark.scaffoldBackground,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColorsExt.dark.primary,
-          brightness: Brightness.dark,
-        ),
-        extensions: const [AppColorsExt.dark],
-      ),
-      home: const SecurityScreen(),
     );
   }
 }

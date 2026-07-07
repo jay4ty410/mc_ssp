@@ -5,6 +5,20 @@ import 'package:mc_ssp/features/authentication/presentation/pages/home_screen.da
 import 'package:mc_ssp/features/calendar.dart' show CalendarScreen;
 import 'package:mc_ssp/features/task_list.dart' show TaskListScreen;
 
+// Sub-pages reachable from the Profile settings menu. `show` is used so the
+// destination files' own `AppColors` classes don't collide with this file's.
+import 'package:mc_ssp/features/authentication/presentation/pages/account_info.dart'
+    show AccountInfoScreen;
+import 'package:mc_ssp/features/authentication/presentation/pages/preferences.dart'
+    show PreferencesPage;
+import 'package:mc_ssp/features/authentication/presentation/pages/notifications.dart'
+    show NotificationsScreen;
+import 'package:mc_ssp/features/authentication/presentation/pages/security.dart'
+    show SecurityScreen;
+// Edit profile screen
+import 'package:mc_ssp/features/authentication/presentation/pages/edit_profile.dart'
+    show EditProfileScreen;
+
 class AppColors {
   static const Color background = Color(0xFFF5F7FA);
   static const Color navy = Color(0xFF0A192F);
@@ -87,9 +101,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _ => const ProfileScreen(),
     };
 
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => screen),
-    );
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => screen));
   }
 
   void _showQuickAddModal(BuildContext context) {
@@ -349,7 +363,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildEditButton() {
     return OutlinedButton.icon(
       onPressed: () {
-        // TODO: Hook up navigation to the edit-profile flow.
+        Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (_) => const EditProfileScreen()));
       },
       icon: const Icon(Icons.edit_outlined, size: 16, color: AppColors.blue),
       label: Text(
@@ -362,7 +378,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       style: OutlinedButton.styleFrom(
         backgroundColor: AppColors.blueLight,
-        side: BorderSide(color: AppColors.blue.withOpacity(0.35)),
+        side: BorderSide(color: AppColors.blue.withValues(alpha: 0.35)),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
@@ -433,6 +449,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         iconBackground: AppColors.blueLight,
         title: 'Account Information',
         subtitle: 'View and update your personal details',
+        onTap: () => Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (_) => const AccountInfoScreen())),
       ),
       _SettingsItemData(
         icon: Icons.settings_outlined,
@@ -440,6 +459,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         iconBackground: AppColors.darkBlueLight,
         title: 'Preferences',
         subtitle: 'Customize your app experience',
+        onTap: () => Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (_) => const PreferencesPage())),
       ),
       _SettingsItemData(
         icon: Icons.notifications_none_rounded,
@@ -447,6 +469,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         iconBackground: AppColors.purpleLight,
         title: 'Notifications',
         subtitle: 'Manage your notification settings',
+        onTap: () => Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (_) => const NotificationsScreen())),
       ),
       _SettingsItemData(
         icon: Icons.shield_outlined,
@@ -454,6 +479,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         iconBackground: AppColors.greenLight,
         title: 'Security',
         subtitle: 'Change password and security options',
+        onTap: () => Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (_) => const SecurityScreen())),
       ),
       _SettingsItemData(
         icon: Icons.dark_mode_outlined,
@@ -520,7 +548,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         style: OutlinedButton.styleFrom(
           backgroundColor: AppColors.cardWhite,
-          side: BorderSide(color: AppColors.red.withOpacity(0.35)),
+          side: BorderSide(color: AppColors.red.withValues(alpha: 0.35)),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
@@ -673,6 +701,7 @@ class _SettingsItemData {
   final Color iconBackground;
   final String title;
   final String subtitle;
+  final VoidCallback? onTap;
 
   const _SettingsItemData({
     required this.icon,
@@ -680,6 +709,7 @@ class _SettingsItemData {
     required this.iconBackground,
     required this.title,
     required this.subtitle,
+    this.onTap,
   });
 }
 
@@ -692,9 +722,7 @@ class _SettingsMenuTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        // TODO: Hook up navigation for "${data.title}".
-      },
+      onTap: data.onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(

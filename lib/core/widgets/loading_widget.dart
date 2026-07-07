@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
+import 'package:mc_ssp/core/widgets/app_theme.dart';
 
 /// Sizing presets for [LoadingWidget]'s inline variant.
 enum LoadingSize { small, medium, large }
@@ -11,15 +11,12 @@ enum LoadingSize { small, medium, large }
 /// optional message), or the default constructor for an inline/local token
 /// (e.g. inside a button row, list footer, or refresh indicator).
 class LoadingWidget extends StatefulWidget {
-  const LoadingWidget({
-    super.key,
-    this.size = LoadingSize.medium,
-    this.message,
-  }) : _fullScreen = false;
+  const LoadingWidget({super.key, this.size = LoadingSize.medium, this.message})
+    : _fullScreen = false;
 
   const LoadingWidget.fullScreen({super.key, this.message})
-      : size = LoadingSize.large,
-        _fullScreen = true;
+    : size = LoadingSize.large,
+      _fullScreen = true;
 
   final LoadingSize size;
   final String? message;
@@ -40,14 +37,17 @@ class LoadingWidget extends StatefulWidget {
   State<LoadingWidget> createState() => _LoadingWidgetState();
 }
 
-class _LoadingWidgetState extends State<LoadingWidget> with SingleTickerProviderStateMixin {
+class _LoadingWidgetState extends State<LoadingWidget>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1100))
-      ..repeat();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1100),
+    )..repeat();
   }
 
   @override
@@ -138,7 +138,8 @@ class _GradientRingPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _GradientRingPainter oldDelegate) =>
-      oldDelegate.gradient != gradient || oldDelegate.strokeWidth != strokeWidth;
+      oldDelegate.gradient != gradient ||
+      oldDelegate.strokeWidth != strokeWidth;
 }
 
 /// A thin shimmering placeholder box for skeleton-loading card content
@@ -160,14 +161,17 @@ class ShimmerBox extends StatefulWidget {
   State<ShimmerBox> createState() => _ShimmerBoxState();
 }
 
-class _ShimmerBoxState extends State<ShimmerBox> with SingleTickerProviderStateMixin {
+class _ShimmerBoxState extends State<ShimmerBox>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1400))
-      ..repeat();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1400),
+    )..repeat();
   }
 
   @override

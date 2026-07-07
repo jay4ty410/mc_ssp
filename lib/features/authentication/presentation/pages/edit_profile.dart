@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-// TODO: Adjust these import paths to match your project structure.
-import 'app_theme.dart'; // Provides AppColorsExt + context.appColors
-import 'app_bottom_navigation_bar.dart'; // Shared bottom nav w/ center FAB
+// Theme & shared widgets
+import 'package:mc_ssp/core/widgets/app_bottom_navigation_bar.dart'; // Shared bottom nav w/ center FAB
+import 'package:mc_ssp/features/authentication/presentation/pages/home_screen.dart'
+    show HomeScreen;
+import 'package:mc_ssp/features/calendar.dart'
+    show CalendarScreen, AppColors, AppColorsX;
+import 'package:mc_ssp/features/task_list.dart' show TaskListScreen;
 
 /// Edit Profile screen.
 ///
@@ -108,7 +112,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               // TODO: Wire up real "delete account" API call.
             },
             style: TextButton.styleFrom(
-              foregroundColor: context.appColors.danger,
+              foregroundColor: context.appColors.warning,
             ),
             child: const Text('Delete'),
           ),
@@ -122,7 +126,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final colors = context.appColors;
 
     return Scaffold(
-      backgroundColor: colors.background,
+      backgroundColor: colors.mainBackground,
       appBar: _EditProfileAppBar(onSave: _handleSave),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -181,14 +185,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ),
       bottomNavigationBar: AppBottomNavigationBar(
         currentIndex: 3, // Profile tab
-        onTabSelected: (index) {
-          // TODO: Wire up navigation between screens.
-        },
+        onTap: (index) => _navigateToTab(context, index),
         onCenterTap: () {
           // TODO: Wire up center FAB action (e.g., quick-add task/event).
         },
       ),
     );
+  }
+
+  void _navigateToTab(BuildContext context, int index) {
+    if (index == 3) return;
+
+    final Widget screen = switch (index) {
+      0 => const HomeScreen(),
+      1 => const CalendarScreen(),
+      2 => const TaskListScreen(),
+      _ => const EditProfileScreen(),
+    };
+
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => screen));
   }
 }
 
@@ -208,7 +225,7 @@ class _EditProfileAppBar extends StatelessWidget
     final colors = context.appColors;
 
     return AppBar(
-      backgroundColor: colors.background,
+      backgroundColor: colors.mainBackground,
       elevation: 0,
       scrolledUnderElevation: 0,
       automaticallyImplyLeading: false,
@@ -264,7 +281,7 @@ class _SaveButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: colors.primary,
+        backgroundColor: colors.primaryAccent,
         foregroundColor: Colors.white,
         elevation: 0,
         padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
@@ -280,7 +297,7 @@ class _SaveButton extends StatelessWidget {
 
 /// Shared card container used by all sections on this screen.
 class _SectionCard extends StatelessWidget {
-  const _SectionCard({required this.child, this.padding});
+  const _SectionCard({required this.child}) : padding = null;
 
   final Widget child;
   final EdgeInsetsGeometry? padding;
@@ -295,7 +312,7 @@ class _SectionCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: colors.cardBackground,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colors.border, width: 1),
+        border: Border.all(color: colors.divider, width: 1),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -347,8 +364,8 @@ class _ProfilePhotoCard extends StatelessWidget {
                 OutlinedButton(
                   onPressed: onChangePhoto,
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: colors.primary,
-                    side: BorderSide(color: colors.primary),
+                    foregroundColor: colors.primaryAccent,
+                    side: BorderSide(color: colors.primaryAccent),
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 8,
@@ -374,7 +391,7 @@ class _ProfilePhotoCard extends StatelessWidget {
 class _AvatarWithCameraBadge extends StatelessWidget {
   const _AvatarWithCameraBadge({required this.colors});
 
-  final AppColorsExt colors;
+  final AppColors colors;
 
   @override
   Widget build(BuildContext context) {
@@ -388,7 +405,7 @@ class _AvatarWithCameraBadge extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: avatarRadius,
-            backgroundColor: colors.border,
+            backgroundColor: colors.divider,
             // TODO: Replace with the real user avatar (NetworkImage/FileImage).
             child: ClipOval(
               child: Image.network(
@@ -411,7 +428,7 @@ class _AvatarWithCameraBadge extends StatelessWidget {
               width: 28,
               height: 28,
               decoration: BoxDecoration(
-                color: colors.primary,
+                color: colors.primaryAccent,
                 shape: BoxShape.circle,
                 border: Border.all(color: colors.cardBackground, width: 2),
               ),
@@ -523,8 +540,7 @@ class _LabeledTextField extends StatelessWidget {
     required this.controller,
     this.keyboardType,
     this.textInputAction,
-    this.validator,
-  });
+  }) : validator = null;
 
   final String label;
   final TextEditingController controller;
@@ -604,7 +620,7 @@ class _PhoneField extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12),
               height: 52,
               decoration: BoxDecoration(
-                border: Border.all(color: colors.border),
+                border: Border.all(color: colors.divider),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: DropdownButtonHideUnderline(
@@ -820,7 +836,7 @@ class _LabeledDropdownField extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 14),
           decoration: BoxDecoration(
-            border: Border.all(color: colors.border),
+            border: Border.all(color: colors.divider),
             borderRadius: BorderRadius.circular(12),
           ),
           child: DropdownButtonHideUnderline(
@@ -859,8 +875,8 @@ class _DeleteAccountButton extends StatelessWidget {
     return OutlinedButton.icon(
       onPressed: onPressed,
       style: OutlinedButton.styleFrom(
-        foregroundColor: colors.danger,
-        side: BorderSide(color: colors.danger),
+        foregroundColor: colors.warning,
+        side: BorderSide(color: colors.warning),
         padding: const EdgeInsets.symmetric(vertical: 14),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
@@ -874,22 +890,22 @@ class _DeleteAccountButton extends StatelessWidget {
 }
 
 /// Shared bordered input decoration used by all text fields on this screen.
-InputDecoration _fieldDecoration(AppColorsExt colors) {
+InputDecoration _fieldDecoration(AppColors colors) {
   return InputDecoration(
     filled: true,
     fillColor: colors.cardBackground,
     contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide(color: colors.border),
+      borderSide: BorderSide(color: colors.divider),
     ),
     enabledBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide(color: colors.border),
+      borderSide: BorderSide(color: colors.divider),
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide(color: colors.primary, width: 1.5),
+      borderSide: BorderSide(color: colors.primaryAccent, width: 1.5),
     ),
   );
 }
@@ -914,7 +930,7 @@ class _EditProfilePreviewApp extends StatelessWidget {
         useMaterial3: true,
         colorSchemeSeed: const Color(0xFF2563EB),
         scaffoldBackgroundColor: const Color(0xFFF8FAFC),
-        extensions: const [AppColorsExt.light],
+        extensions: const [AppColors.light],
       ),
       home: const EditProfileScreen(),
     );

@@ -39,30 +39,32 @@ import 'package:flutter/material.dart';
 // to run this screen standalone without the extension present.
 // -----------------------------------------------------------------------
 class _Palette {
-  static const background = Color(0xFFF3F5FA);
-  static const surface = Colors.white;
-  static const textPrimary = Color(0xFF16213E);
-  static const textSecondary = Color(0xFF8A8FA3);
-  static const divider = Color(0xFFEDEFF5);
-  static const primary = Color(0xFF3E6BF2);
+  _Palette();
 
-  static const iconBoxBlue = Color(0xFFE3ECFD);
-  static const onIconBlue = Color(0xFF3E6BF2);
+  final Color background = Color(0xFFF3F5FA);
+  final Color surface = Colors.white;
+  final Color textPrimary = Color(0xFF16213E);
+  final Color textSecondary = Color(0xFF8A8FA3);
+  final Color divider = Color(0xFFEDEFF5);
+  final Color primary = Color(0xFF3E6BF2);
 
-  static const iconBoxGreen = Color(0xFFE1F5E9);
-  static const onIconGreen = Color(0xFF34A853);
+  final Color iconBoxBlue = Color(0xFFE3ECFD);
+  final Color onIconBlue = Color(0xFF3E6BF2);
 
-  static const iconBoxOrange = Color(0xFFFDEBD8);
-  static const onIconOrange = Color(0xFFF0932B);
+  final Color iconBoxGreen = Color(0xFFE1F5E9);
+  final Color onIconGreen = Color(0xFF34A853);
 
-  static const iconBoxPurple = Color(0xFFEBE3FB);
-  static const onIconPurple = Color(0xFF7B4FE0);
+  final Color iconBoxOrange = Color(0xFFFDEBD8);
+  final Color onIconOrange = Color(0xFFF0932B);
 
-  static const iconBoxGray = Color(0xFFEDEFF3);
-  static const onIconGray = Color(0xFF9AA0AC);
+  final Color iconBoxPurple = Color(0xFFEBE3FB);
+  final Color onIconPurple = Color(0xFF7B4FE0);
 
-  static const settingsBadgeBg = Color(0xFFF1E7FE);
-  static const settingsBadgeIcon = Color(0xFF8B4FE0);
+  final Color iconBoxGray = Color(0xFFEDEFF3);
+  final Color onIconGray = Color(0xFF9AA0AC);
+
+  final Color settingsBadgeBg = Color(0xFFF1E7FE);
+  final Color settingsBadgeIcon = Color(0xFF8B4FE0);
 }
 
 // If you already have `context.appColors` wired up via a ThemeExtension,

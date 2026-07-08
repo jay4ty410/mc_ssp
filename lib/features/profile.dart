@@ -9,6 +9,8 @@ import 'package:mc_ssp/features/task_list.dart' show TaskListScreen;
 // destination files' own `AppColors` classes don't collide with this file's.
 import 'package:mc_ssp/features/authentication/presentation/pages/account_info.dart'
     show AccountInfoScreen;
+import 'package:mc_ssp/features/authentication/presentation/pages/appearance.dart'
+    show AppearanceScreen;
 import 'package:mc_ssp/features/authentication/presentation/pages/preferences.dart'
     show PreferencesPage;
 import 'package:mc_ssp/features/authentication/presentation/pages/notifications.dart'
@@ -489,6 +491,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         iconBackground: AppColors.deepPurpleLight,
         title: 'Appearance',
         subtitle: 'Choose theme and display options',
+        onTap: () => Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (_) => const AppearanceScreen())),
       ),
       _SettingsItemData(
         icon: Icons.help_outline_rounded,

@@ -2,12 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 // Theme & shared widgets
-import 'package:mc_ssp/core/widgets/app_bottom_navigation_bar.dart'; // Shared bottom nav w/ center FAB
-import 'package:mc_ssp/features/authentication/presentation/pages/home_screen.dart'
-    show HomeScreen;
-import 'package:mc_ssp/features/calendar.dart'
-    show CalendarScreen, AppColors, AppColorsX;
-import 'package:mc_ssp/features/task_list.dart' show TaskListScreen;
+import 'package:mc_ssp/features/calendar.dart' show AppColors, AppColorsX;
 
 /// Edit Profile screen.
 ///
@@ -183,29 +178,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: AppBottomNavigationBar(
-        currentIndex: 3, // Profile tab
-        onTap: (index) => _navigateToTab(context, index),
-        onCenterTap: () {
-          // TODO: Wire up center FAB action (e.g., quick-add task/event).
-        },
-      ),
     );
-  }
-
-  void _navigateToTab(BuildContext context, int index) {
-    if (index == 3) return;
-
-    final Widget screen = switch (index) {
-      0 => const HomeScreen(),
-      1 => const CalendarScreen(),
-      2 => const TaskListScreen(),
-      _ => const EditProfileScreen(),
-    };
-
-    Navigator.of(
-      context,
-    ).pushReplacement(MaterialPageRoute(builder: (_) => screen));
   }
 }
 

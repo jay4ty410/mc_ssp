@@ -151,9 +151,6 @@ class _PreferencesPageState extends State<PreferencesPage> {
   // --- Data & Sync ---
   bool _syncAcrossDevices = true;
 
-  // Bottom nav: Home=0, Calendar=1, Tasks=2, Profile=3 (center FAB separate).
-  final int _activeNavIndex = 3;
-
   void _onSettingsTap() {
     // TODO: navigate to advanced settings, or no-op if this IS that screen.
   }
@@ -163,14 +160,6 @@ class _PreferencesPageState extends State<PreferencesPage> {
     if (Navigator.of(context).canPop()) {
       Navigator.of(context).pop();
     }
-  }
-
-  void _onCenterFabTap() {
-    // TODO: wire to "create new task/event" flow.
-  }
-
-  void _onNavTap(int index) {
-    // TODO: wire to app router / bottom-nav-bar state management.
   }
 
   // Placeholder navigators for chevron rows — wire these to real picker
@@ -279,8 +268,7 @@ class _PreferencesPageState extends State<PreferencesPage> {
         subtitle: 'Play a sound when marking tasks complete',
         trailingType: _TrailingType.toggle,
         toggleValue: _markTasksAsCompletedSound,
-        onToggleChanged: (v) =>
-            setState(() => _markTasksAsCompletedSound = v),
+        onToggleChanged: (v) => setState(() => _markTasksAsCompletedSound = v),
       ),
       _PreferenceItem(
         icon: Icons.visibility_off_outlined,
@@ -355,13 +343,13 @@ class _PreferencesPageState extends State<PreferencesPage> {
                         for (final item in generalItems)
                           _PreferenceRow(
                             item: item,
-                            trailingBuilder: item.trailingType ==
-                                    _TrailingType.segment
+                            trailingBuilder:
+                                item.trailingType == _TrailingType.segment
                                 ? (_) => _ThemeSegmentedControl(
-                                      selectedIndex: _themeIndex,
-                                      onChanged: (i) =>
-                                          setState(() => _themeIndex = i),
-                                    )
+                                    selectedIndex: _themeIndex,
+                                    onChanged: (i) =>
+                                        setState(() => _themeIndex = i),
+                                  )
                                 : null,
                           ),
                       ],
@@ -396,11 +384,6 @@ class _PreferencesPageState extends State<PreferencesPage> {
             ),
           ],
         ),
-      ),
-      bottomNavigationBar: _PreferencesBottomNavBar(
-        activeIndex: _activeNavIndex,
-        onTap: _onNavTap,
-        onCenterTap: _onCenterFabTap,
       ),
     );
   }
@@ -451,10 +434,7 @@ class _PreferencesHeader extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     'Customize your app experience',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: colors.textSecondary,
-                    ),
+                    style: TextStyle(fontSize: 14, color: colors.textSecondary),
                   ),
                 ],
               ),
@@ -545,11 +525,7 @@ class _SectionCard extends StatelessWidget {
           for (int i = 0; i < children.length; i++) ...[
             children[i],
             if (i != children.length - 1)
-              Divider(
-                height: 1,
-                thickness: 1,
-                color: colors.divider,
-              ),
+              Divider(height: 1, thickness: 1, color: colors.divider),
           ],
         ],
       ),
@@ -593,10 +569,7 @@ class _PreferenceRow extends StatelessWidget {
             children: [
               Text(
                 item.valueLabel ?? '',
-                style: TextStyle(
-                  fontSize: 14.5,
-                  color: colors.textSecondary,
-                ),
+                style: TextStyle(fontSize: 14.5, color: colors.textSecondary),
               ),
               const SizedBox(width: 2),
               Icon(Icons.chevron_right, color: colors.textSecondary, size: 20),
@@ -631,10 +604,7 @@ class _PreferenceRow extends StatelessWidget {
                 const SizedBox(height: 3),
                 Text(
                   item.subtitle,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: colors.textSecondary,
-                  ),
+                  style: TextStyle(fontSize: 13, color: colors.textSecondary),
                 ),
               ],
             ),
@@ -785,10 +755,14 @@ class _PreferencesBottomNavBar extends StatelessWidget {
 
     const items = <(_NavIconSpec, String)>[
       (_NavIconSpec(Icons.home_outlined, Icons.home), 'Home'),
-      (_NavIconSpec(Icons.calendar_today_outlined, Icons.calendar_today),
-          'Calendar'),
-      (_NavIconSpec(Icons.checklist_rtl_outlined, Icons.checklist_rtl),
-          'Tasks'),
+      (
+        _NavIconSpec(Icons.calendar_today_outlined, Icons.calendar_today),
+        'Calendar',
+      ),
+      (
+        _NavIconSpec(Icons.checklist_rtl_outlined, Icons.checklist_rtl),
+        'Tasks',
+      ),
       (_NavIconSpec(Icons.person_outline, Icons.person), 'Profile'),
     ];
 
@@ -872,7 +846,11 @@ class _NavBarItem extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(isActive ? spec.filled : spec.outlined, color: color, size: 24),
+            Icon(
+              isActive ? spec.filled : spec.outlined,
+              color: color,
+              size: 24,
+            ),
             const SizedBox(height: 3),
             Text(
               label,

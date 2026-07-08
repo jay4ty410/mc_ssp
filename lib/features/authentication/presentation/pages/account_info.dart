@@ -38,14 +38,6 @@ class AccountInfoScreen extends StatelessWidget {
     // TODO: Navigate to the relevant edit screen for [field].
   }
 
-  void _onNavTap(BuildContext context, int index) {
-    // TODO: Handle bottom navigation switching.
-  }
-
-  void _onFabTap(BuildContext context) {
-    // TODO: Handle the primary "add" action.
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,11 +58,6 @@ class AccountInfoScreen extends StatelessWidget {
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: _AppBottomNavigationBar(
-        currentIndex: 3,
-        onTap: (index) => _onNavTap(context, index),
-        onFabTap: () => _onFabTap(context),
       ),
     );
   }

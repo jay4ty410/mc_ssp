@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mc_ssp/core/widgets/app_bottom_navigation_bar.dart';
 import 'package:mc_ssp/features/authentication/presentation/pages/home_screen.dart'
     show HomeScreen;
+import 'package:mc_ssp/features/authentication/presentation/pages/routine.dart'
+    show RoutineScreen;
 import 'package:mc_ssp/features/calendar.dart' show CalendarScreen;
 import 'package:mc_ssp/features/task_list.dart' show TaskListScreen;
 
@@ -86,7 +88,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
       bottomNavigationBar: AppBottomNavigationBar(
-        currentIndex: 3,
+        currentIndex: 4,
         onTap: (index) => _navigateToTab(context, index),
         onCenterTap: () => _showQuickAddModal(context),
       ),
@@ -94,12 +96,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _navigateToTab(BuildContext context, int index) {
-    if (index == 3) return;
-
     final Widget screen = switch (index) {
       0 => const HomeScreen(),
       1 => const CalendarScreen(),
       2 => const TaskListScreen(),
+      3 => const RoutineScreen(),
       _ => const ProfileScreen(),
     };
 

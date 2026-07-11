@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 
-/// A reusable bottom navigation bar with a centered floating "+" action
-/// button. Drop this straight into the `bottomNavigationBar:` property of
-/// any Scaffold.
+/// A reusable bottom navigation bar with five tabs for the main app areas.
+/// Drop this straight into the `bottomNavigationBar:` property of any
+/// Scaffold.
+///
+/// Visual style: soft white bar, subtle top divider, and a rounded
+/// "pill" highlight behind the active icon (matching the MC_SS reference
+/// design). Each item has a gentle scale + fade animation on tap for a
+/// stylish, responsive feel.
 ///
 /// Index mapping:
 ///   0 -> Home
 ///   1 -> Calendar
 ///   2 -> Tasks
-///   3 -> Profile
-///
-/// The center "+" button does NOT occupy an index in the above list — it
-/// fires [onCenterTap] independently (e.g. to open a "quick add" modal),
-/// so it never interferes with [currentIndex] / [onTap] state handling.
+///   3 -> Routine
+///   4 -> Profile
 class AppBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
@@ -31,22 +33,27 @@ class AppBottomNavigationBar extends StatelessWidget {
   static const List<_BottomNavItem> _items = [
     _BottomNavItem(
       icon: Icons.home_outlined,
-      activeIcon: Icons.home,
+      activeIcon: Icons.home_rounded,
       label: 'Home',
     ),
     _BottomNavItem(
       icon: Icons.calendar_today_outlined,
-      activeIcon: Icons.calendar_today,
+      activeIcon: Icons.calendar_month_rounded,
       label: 'Calendar',
     ),
     _BottomNavItem(
-      icon: Icons.checklist_rtl_outlined,
-      activeIcon: Icons.checklist_rtl,
+      icon: Icons.checklist_outlined,
+      activeIcon: Icons.checklist_rounded,
       label: 'Tasks',
     ),
     _BottomNavItem(
-      icon: Icons.person_outline,
-      activeIcon: Icons.person,
+      icon: Icons.self_improvement_outlined,
+      activeIcon: Icons.self_improvement_rounded,
+      label: 'Routine',
+    ),
+    _BottomNavItem(
+      icon: Icons.person_outline_rounded,
+      activeIcon: Icons.person_rounded,
       label: 'Profile',
     ),
   ];
@@ -56,24 +63,29 @@ class AppBottomNavigationBar extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border(
-          top: BorderSide(color: Colors.grey.withValues(alpha: 0.08), width: 1),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 20,
+            offset: const Offset(0, -4),
+          ),
+        ],
       ),
       child: SafeArea(
         top: false,
         child: SizedBox(
-          height: 68,
+          height: 72,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              _buildNavItem(0),
-              _buildNavItem(1),
-              _CenterActionButton(onTap: onCenterTap),
-              _buildNavItem(2),
-              _buildNavItem(3),
-            ],
+            children: List.generate(
+              _items.length,
+              (index) => _buildNavItem(index),
+            ),
           ),
         ),
       ),
@@ -106,7 +118,7 @@ class _BottomNavItem {
   });
 }
 
-class _NavBarItem extends StatelessWidget {
+class _NavBarItem extends StatefulWidget {
   final IconData icon;
   final String label;
   final bool isSelected;
@@ -124,76 +136,60 @@ class _NavBarItem extends StatelessWidget {
   });
 
   @override
+  State<_NavBarItem> createState() => _NavBarItemState();
+}
+
+class _NavBarItemState extends State<_NavBarItem> {
+  @override
   Widget build(BuildContext context) {
-    final color = isSelected ? activeColor : inactiveColor;
+    final color = widget.isSelected ? widget.activeColor : widget.inactiveColor;
 
     return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        splashColor: activeColor.withValues(alpha: 0.08),
-        highlightColor: Colors.transparent,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: widget.onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(vertical: 6),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, color: color, size: 24),
-              const SizedBox(height: 4),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                  color: color,
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeOutCubic,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 7,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 180),
+                  transitionBuilder: (child, animation) =>
+                      FadeTransition(opacity: animation, child: child),
+                  child: Icon(
+                    widget.icon,
+                    key: ValueKey<IconData>(widget.icon),
+                    color: color,
+                    size: 24,
+                  ),
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _CenterActionButton extends StatelessWidget {
-  final VoidCallback? onTap;
-
-  const _CenterActionButton({this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Transform.translate(
-      offset: const Offset(0, -14),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(30),
-          child: Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              color: AppBottomNavigationBar._activeColor,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: AppBottomNavigationBar._activeColor.withValues(
-                    alpha: 0.35,
-                  ),
-                  blurRadius: 14,
-                  spreadRadius: 1,
-                  offset: const Offset(0, 6),
+              const SizedBox(height: 4),
+              AnimatedDefaultTextStyle(
+                duration: const Duration(milliseconds: 180),
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: widget.isSelected
+                      ? FontWeight.w700
+                      : FontWeight.w500,
+                  color: color,
                 ),
-              ],
-            ),
-            child: const Icon(
-              Icons.add,
-              color: Colors.white,
-              size: 28,
-              weight: 700,
-            ),
+                child: Text(widget.label),
+              ),
+            ],
           ),
         ),
       ),

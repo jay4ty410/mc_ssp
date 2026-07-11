@@ -36,6 +36,8 @@ import 'package:flutter/material.dart';
 import 'package:mc_ssp/core/widgets/app_bottom_navigation_bar.dart';
 import 'package:mc_ssp/features/authentication/presentation/pages/home_screen.dart'
     show HomeScreen;
+import 'package:mc_ssp/features/authentication/presentation/pages/routine.dart'
+    show RoutineScreen;
 import 'package:mc_ssp/features/profile.dart' show ProfileScreen;
 import 'package:mc_ssp/features/task_list.dart' show TaskListScreen;
 
@@ -376,7 +378,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final colors = context.appColors;
 
     return Scaffold(
-      backgroundColor: colors.primaryAccent,
+      backgroundColor: colors.mainBackground,
       floatingActionButton: _AddEventFab(colors: colors),
       bottomNavigationBar: AppBottomNavigationBar(
         currentIndex: 1,
@@ -483,13 +485,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final Widget screen = switch (index) {
       0 => const HomeScreen(),
       2 => const TaskListScreen(),
-      3 => const ProfileScreen(),
+      3 => const RoutineScreen(),
+      4 => const ProfileScreen(),
       _ => const CalendarScreen(),
     };
 
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => screen),
-    );
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => screen));
   }
 
   void _showQuickAddModal(BuildContext context) {

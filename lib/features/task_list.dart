@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mc_ssp/core/widgets/app_bottom_navigation_bar.dart';
-import 'package:mc_ssp/features/authentication/presentation/pages/home_screen.dart' show HomeScreen;
+import 'package:mc_ssp/features/authentication/presentation/pages/home_screen.dart'
+    show HomeScreen;
+import 'package:mc_ssp/features/authentication/presentation/pages/routine.dart'
+    show RoutineScreen;
 import 'package:mc_ssp/features/calendar.dart' show CalendarScreen;
 import 'package:mc_ssp/features/profile.dart' show ProfileScreen;
 
@@ -198,13 +201,14 @@ class _TaskListScreenState extends State<TaskListScreen> {
     final Widget screen = switch (index) {
       0 => const HomeScreen(),
       1 => const CalendarScreen(),
-      3 => const ProfileScreen(),
+      3 => const RoutineScreen(),
+      4 => const ProfileScreen(),
       _ => const TaskListScreen(),
     };
 
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => screen),
-    );
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => screen));
   }
 
   void _showQuickAddModal(BuildContext context) {
@@ -248,42 +252,6 @@ class _TaskListScreenState extends State<TaskListScreen> {
     return Row(
       children: [
         Image.asset('assets/images/register01.png', height: 80),
-        const SizedBox(width: 10),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            RichText(
-              text: const TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'MC_',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w900,
-                      fontSize: 18,
-                      color: AppColors.navy,
-                    ),
-                  ),
-                  TextSpan(
-                    text: 'SS',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w900,
-                      fontSize: 18,
-                      color: AppColors.primaryBlue,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Text(
-              'Smart Scheduler',
-              style: TextStyle(
-                fontSize: 11,
-                color: AppColors.mutedBlue,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
         const Spacer(),
         _NotificationBell(count: 3),
         const SizedBox(width: 10),

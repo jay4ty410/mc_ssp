@@ -3,6 +3,8 @@ import 'package:mc_ssp/core/widgets/app_bottom_navigation_bar.dart';
 import 'package:mc_ssp/features/calendar.dart' show CalendarScreen;
 import 'package:mc_ssp/features/profile.dart' show ProfileScreen;
 import 'package:mc_ssp/features/task_list.dart' show TaskListScreen;
+import 'package:mc_ssp/features/authentication/presentation/pages/routine.dart'
+    show RoutineScreen;
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -48,13 +50,14 @@ class HomeScreen extends StatelessWidget {
     final Widget screen = switch (index) {
       1 => const CalendarScreen(),
       2 => const TaskListScreen(),
-      3 => const ProfileScreen(),
+      3 => const RoutineScreen(),
+      4 => const ProfileScreen(),
       _ => const HomeScreen(),
     };
 
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => screen),
-    );
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => screen));
   }
 
   void _showQuickAddModal(BuildContext context) {

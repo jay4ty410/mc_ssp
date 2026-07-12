@@ -1,28 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'register_screen.dart';
 import 'recovery_screen.dart';
 import 'home_screen.dart';
+import 'package:mc_ssp/features/authentication/services/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 /// Primary brand blue used across buttons and links.
 const Color kPrimaryBlue = Color(0xFF1656F5);
 const Color kMutedText = Color(0xFF6B7280);
 const Color kFieldBorder = Color(0xFFE2E6EE);
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   bool _obscurePassword = true;
   bool _isLoading = false;
+  final _authService = AuthService();
 
   @override
   void dispose() {
@@ -34,14 +38,31 @@ class _LoginScreenState extends State<LoginScreen> {
   void _handleLogin() {
     if (_formKey.currentState?.validate() ?? false) {
       setState(() => _isLoading = true);
-      // TODO: Hook up actual authentication logic here.
-      Future.delayed(const Duration(milliseconds: 800), () {
-        if (!mounted) return;
-        setState(() => _isLoading = false);
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
-        );
-      });
+      final email = _emailController.text.trim();
+      final password = _passwordController.text;
+
+      _authService
+          .signInAndCheckVerified(email: email, password: password)
+          .then((user) {
+            if (!mounted) return;
+            setState(() => _isLoading = false);
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => const HomeScreen()),
+            );
+          })
+          .catchError((err) {
+            if (!mounted) return;
+            setState(() => _isLoading = false);
+            String message;
+            if (err is FirebaseAuthException) {
+              message = AuthService.getUserFacingErrorMessage(err);
+            } else {
+              message = 'Authentication failed';
+            }
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(message)));
+          });
     }
   }
 

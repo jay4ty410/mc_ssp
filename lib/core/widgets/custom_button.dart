@@ -113,7 +113,9 @@ class CustomButton extends StatelessWidget {
         break;
     }
 
-    return isExpanded ? SizedBox(width: double.infinity, child: button) : button;
+    return isExpanded
+        ? SizedBox(width: double.infinity, child: button)
+        : button;
   }
 
   Color _foregroundColor(ThemeData theme, Color baseColor) {
@@ -126,7 +128,9 @@ class CustomButton extends StatelessWidget {
         return Colors.white;
       case CustomButtonVariant.outlined:
       case CustomButtonVariant.text:
-        return _isDisabled ? theme.colorScheme.onSurface.withValues(alpha: 0.4) : baseColor;
+        return _isDisabled
+            ? theme.colorScheme.onSurface.withValues(alpha: 0.4)
+            : baseColor;
     }
   }
 
@@ -137,7 +141,9 @@ class CustomButton extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           gradient: disabled ? null : tokens.primaryGradient,
-          color: disabled ? theme.colorScheme.onSurface.withValues(alpha: 0.12) : null,
+          color: disabled
+              ? theme.colorScheme.onSurface.withValues(alpha: 0.12)
+              : null,
           borderRadius: BorderRadius.circular(16),
           boxShadow: disabled
               ? null
@@ -165,7 +171,9 @@ class CustomButton extends StatelessWidget {
   Widget _buildSolid(ThemeData theme, Color baseColor, Widget content) {
     final disabled = _isDisabled;
     return Material(
-      color: disabled ? theme.colorScheme.onSurface.withValues(alpha: 0.12) : baseColor,
+      color: disabled
+          ? theme.colorScheme.onSurface.withValues(alpha: 0.12)
+          : baseColor,
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
@@ -177,7 +185,9 @@ class CustomButton extends StatelessWidget {
 
   Widget _buildOutlined(ThemeData theme, Color baseColor, Widget content) {
     final disabled = _isDisabled;
-    final borderColor = disabled ? theme.colorScheme.onSurface.withValues(alpha: 0.2) : baseColor;
+    final borderColor = disabled
+        ? theme.colorScheme.onSurface.withValues(alpha: 0.2)
+        : baseColor;
     return Material(
       color: Colors.transparent,
       borderRadius: BorderRadius.circular(999),
@@ -247,7 +257,11 @@ class _Content extends StatelessWidget {
           const SizedBox(width: 10),
           Text(
             label,
-            style: TextStyle(color: foreground, fontSize: fontSize, fontWeight: FontWeight.w600),
+            style: TextStyle(
+              color: foreground,
+              fontSize: fontSize,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       );
@@ -261,7 +275,11 @@ class _Content extends StatelessWidget {
     children.add(
       Text(
         label,
-        style: TextStyle(color: foreground, fontSize: fontSize, fontWeight: FontWeight.w600),
+        style: TextStyle(
+          color: foreground,
+          fontSize: fontSize,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
     if (trailingIcon != null) {
@@ -269,6 +287,10 @@ class _Content extends StatelessWidget {
       children.add(Icon(trailingIcon, size: fontSize + 3, color: foreground));
     }
 
-    return Row(mainAxisSize: MainAxisSize.min, mainAxisAlignment: MainAxisAlignment.center, children: children);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: children,
+    );
   }
 }

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mc_ssp/core/widgets/app_bottom_navigation_bar.dart';
 import 'package:mc_ssp/features/authentication/presentation/pages/home_screen.dart'
     show HomeScreen;
 import 'package:mc_ssp/features/calendar.dart' show CalendarScreen;
 import 'package:mc_ssp/features/profile.dart' show ProfileScreen;
 import 'package:mc_ssp/features/task_list.dart' show TaskListScreen;
+import 'package:mc_ssp/providers/firebase_providers.dart';
+import 'package:mc_ssp/providers/repository_providers.dart';
 
 // TODO: Replace with the shared theme import from the main app.
 // import 'app_theme.dart';
@@ -22,106 +25,80 @@ import 'package:mc_ssp/features/task_list.dart' show TaskListScreen;
 /// are marked with `// TODO`. This file is self-contained and includes a
 /// local `_Palette` fallback + `main()` so it can be previewed in isolation.
 /// ---------------------------------------------------------------------------
-class RoutineScreen extends StatefulWidget {
+class RoutineScreen extends ConsumerStatefulWidget {
   const RoutineScreen({super.key});
 
   @override
-  State<RoutineScreen> createState() => _RoutineScreenState();
+  ConsumerState<RoutineScreen> createState() => _RoutineScreenState();
 }
 
-class _RoutineScreenState extends State<RoutineScreen> {
+class _RoutineScreenState extends ConsumerState<RoutineScreen> {
   RoutineFilter _selectedFilter = RoutineFilter.all;
 
   final int _bottomNavIndex = 3;
 
-  final DateTime _selectedDate = DateTime(2025, 5, 21);
+  DateTime _selectedDate = DateTime.now();
 
-  static const List<_RoutineItemData> _allItems = [
-    _RoutineItemData(
-      time: '07:00 AM',
-      title: 'Study: Mathematics',
-      subtitle: 'Focus Session',
-      duration: '50m',
-      category: RoutineCategory.study,
-    ),
-    _RoutineItemData(
-      time: '07:50 AM',
-      title: 'Short Break',
-      subtitle: 'Relax & Recharge',
-      duration: '10m',
-      category: RoutineCategory.breakTime,
-    ),
-    _RoutineItemData(
-      time: '08:00 AM',
-      title: 'Study: Programming',
-      subtitle: 'Focus Session',
-      duration: '50m',
-      category: RoutineCategory.studyAlt,
-    ),
-    _RoutineItemData(
-      time: '08:50 AM',
-      title: 'Short Break',
-      subtitle: 'Relax & Recharge',
-      duration: '10m',
-      category: RoutineCategory.breakTime,
-    ),
-    _RoutineItemData(
-      time: '09:00 AM',
-      title: 'Data Structures Lecture',
-      subtitle: 'Room 305, CS Building',
-      duration: '1h',
-      category: RoutineCategory.event,
-      hasLocationIcon: true,
-    ),
-    _RoutineItemData(
-      time: '10:00 AM',
-      title: 'Assignment Submission',
-      subtitle: 'Operating Systems',
-      duration: '30m',
-      category: RoutineCategory.task,
-    ),
-    _RoutineItemData(
-      time: '10:30 AM',
-      title: 'Gym Session',
-      subtitle: 'FitLife Gym',
-      duration: '1h',
-      category: RoutineCategory.gym,
-    ),
-    _RoutineItemData(
-      time: '12:00 PM',
-      title: 'Lunch Break',
-      subtitle: 'Take a healthy break',
-      duration: '1h',
-      category: RoutineCategory.meal,
-    ),
-    _RoutineItemData(
-      time: '01:00 AM',
-      title: 'Study: Database Systems',
-      subtitle: 'Focus Session',
-      duration: '50m',
-      category: RoutineCategory.study,
-    ),
-    _RoutineItemData(
-      time: '01:50 PM',
-      title: 'Short Break',
-      subtitle: 'Relax & Recharge',
-      duration: '10m',
-      category: RoutineCategory.breakTime,
-    ),
-    _RoutineItemData(
-      time: '02:00 PM',
-      title: 'Study: Computer Networks',
-      subtitle: 'Focus Session',
-      duration: '50m',
-      category: RoutineCategory.studyAlt,
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userId = ref.read(firebaseAuthProvider).currentUser?.uid;
+      if (userId != null) {
+        ref
+            .read(routineControllerProvider.notifier)
+            .loadByDate(userId, DateTime.now());
+      }
+    });
+  }
 
-  List<_RoutineItemData> get _filteredItems {
-    if (_selectedFilter == RoutineFilter.all) return _allItems;
-    return _allItems
-        .where((item) => item.category.filter == _selectedFilter)
-        .toList();
+  List<_RoutineItemData> _mapModelsToItems(List<dynamic> models) {
+    return models.map((m) {
+      // m is DailyRoutineModel; map fields to the visual item data.
+      final String time = (m.startTime ?? '').toString();
+      final String title = (m.title ?? '').toString();
+      final String subtitle = (m.description ?? '').toString();
+      // Attempt to compute duration from start/end strings, fallback to empty.
+      String duration = '';
+      try {
+        final start = DateTime.parse(m.startTime);
+        final end = DateTime.parse(m.endTime);
+        final diff = end.difference(start);
+        if (diff.inMinutes >= 60) {
+          duration = '${(diff.inMinutes / 60).round()}h';
+        } else {
+          duration = '${diff.inMinutes}m';
+        }
+      } catch (_) {
+        duration = '';
+      }
+
+      final category = _mapCategoryFromText(title + ' ' + subtitle);
+
+      return _RoutineItemData(
+        time: time,
+        title: title,
+        subtitle: subtitle,
+        duration: duration,
+        category: category,
+        hasLocationIcon:
+            subtitle.toLowerCase().contains('room') ||
+            subtitle.toLowerCase().contains('gym'),
+      );
+    }).toList();
+  }
+
+  RoutineCategory _mapCategoryFromText(String text) {
+    final t = text.toLowerCase();
+    if (t.contains('gym')) return RoutineCategory.gym;
+    if (t.contains('lunch') || t.contains('break')) return RoutineCategory.meal;
+    if (t.contains('assignment') || t.contains('task') || t.contains('submit'))
+      return RoutineCategory.task;
+    if (t.contains('lecture') || t.contains('event') || t.contains('room'))
+      return RoutineCategory.event;
+    if (t.contains('study') || t.contains('focus') || t.contains('program'))
+      return RoutineCategory.studyAlt;
+    return RoutineCategory.study;
   }
 
   void _navigateToTab(BuildContext context, int index) {
@@ -172,7 +149,47 @@ class _RoutineScreenState extends State<RoutineScreen> {
                     },
                   ),
                   const SizedBox(height: 20),
-                  _TimelineCard(palette: palette, items: _filteredItems),
+                  // Timeline: wired to `RoutineController` (Firestore-backed)
+                  Builder(
+                    builder: (context) {
+                      final routineState = ref.watch(routineControllerProvider);
+                      final models = routineState.routines;
+                      final items = _mapModelsToItems(models);
+
+                      if (routineState.isLoading) {
+                        return Container(
+                          height: 200,
+                          alignment: Alignment.center,
+                          child: const CircularProgressIndicator(),
+                        );
+                      }
+
+                      if (routineState.error != null) {
+                        return Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Text(
+                            routineState.error!,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(color: Colors.redAccent),
+                          ),
+                        );
+                      }
+
+                      if (items.isEmpty) {
+                        return Container(
+                          padding: const EdgeInsets.symmetric(vertical: 24),
+                          alignment: Alignment.center,
+                          child: Text(
+                            'No routine items for today.',
+                            style: TextStyle(color: palette.secondaryText),
+                          ),
+                        );
+                      }
+
+                      // Preserve exact timeline layout; only data source changed.
+                      return _TimelineCard(palette: palette, items: items);
+                    },
+                  ),
                   const SizedBox(height: 20),
                   _TodaysProgressCard(
                     palette: palette,

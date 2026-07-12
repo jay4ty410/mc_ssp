@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:mc_ssp/features/authentication/services/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 const Color kPrimaryBlue = Color(0xFF1656F5);
 const Color kMutedText = Color(0xFF6B7280);
@@ -27,6 +29,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _agreedToTerms = true;
   bool _isLoading = false;
   _PasswordStrength _passwordStrength = _PasswordStrength.empty;
+  final _authService = AuthService();
 
   @override
   void initState() {
@@ -78,10 +81,38 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
     if (_formKey.currentState?.validate() ?? false) {
       setState(() => _isLoading = true);
-      // TODO: Hook up actual registration logic here.
-      Future.delayed(const Duration(seconds: 1), () {
-        if (mounted) setState(() => _isLoading = false);
-      });
+      final name = _nameController.text.trim();
+      final email = _emailController.text.trim();
+      final password = _passwordController.text;
+
+      _authService
+          .registerAndSendVerification(
+            name: name,
+            email: email,
+            password: password,
+          )
+          .then((_) {
+            if (!mounted) return;
+            setState(() => _isLoading = false);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Account created successfully. You can sign in now.',
+                ),
+              ),
+            );
+            Navigator.of(context).pop();
+          })
+          .catchError((err) {
+            if (!mounted) return;
+            setState(() => _isLoading = false);
+            final message = (err is FirebaseAuthException)
+                ? AuthService.getUserFacingErrorMessage(err)
+                : 'Registration failed';
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(message)));
+          });
     }
   }
 

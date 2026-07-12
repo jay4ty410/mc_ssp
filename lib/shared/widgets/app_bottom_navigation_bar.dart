@@ -179,7 +179,9 @@ class _CenterActionButton extends StatelessWidget {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: AppBottomNavigationBar._activeColor.withValues(alpha: 0.35),
+                  color: AppBottomNavigationBar._activeColor.withValues(
+                    alpha: 0.35,
+                  ),
                   blurRadius: 14,
                   spreadRadius: 1,
                   offset: const Offset(0, 6),

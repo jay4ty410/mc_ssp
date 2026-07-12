@@ -346,8 +346,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             style: OutlinedButton.styleFrom(
               foregroundColor: kError,
               side: const BorderSide(color: kError, width: 1.4),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(24),
               ),

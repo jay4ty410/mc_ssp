@@ -168,8 +168,11 @@ class AppColorsExt extends ThemeExtension<AppColorsExt> {
   AppColorsExt lerp(ThemeExtension<AppColorsExt>? other, double t) {
     if (other is! AppColorsExt) return this;
     return AppColorsExt(
-      secondaryBackground:
-          Color.lerp(secondaryBackground, other.secondaryBackground, t)!,
+      secondaryBackground: Color.lerp(
+        secondaryBackground,
+        other.secondaryBackground,
+        t,
+      )!,
       divider: Color.lerp(divider, other.divider, t)!,
       disabledText: Color.lerp(disabledText, other.disabledText, t)!,
       success: Color.lerp(success, other.success, t)!,

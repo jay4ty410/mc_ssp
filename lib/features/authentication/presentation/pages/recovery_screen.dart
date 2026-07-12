@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:mc_ssp/features/authentication/repositories/auth_repository.dart';
+import 'package:mc_ssp/features/authentication/providers/auth_providers.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 /// Password Recovery ("Forgot Password?") screen for MC_SS Smart Scheduler.
 ///
 /// Matches the reference design: back button, logo header, "Forgot Password?"
 /// title + subtitle, email field with validation, primary "Send Reset Link"
 /// button, an "OR" divider, and a bottom info card linking back to Sign In.
-class RecoveryScreen extends StatefulWidget {
+class RecoveryScreen extends ConsumerStatefulWidget {
   const RecoveryScreen({super.key});
 
   @override
-  State<RecoveryScreen> createState() => _RecoveryScreenState();
+  ConsumerState<RecoveryScreen> createState() => _RecoveryScreenState();
 }
 
-class _RecoveryScreenState extends State<RecoveryScreen> {
+class _RecoveryScreenState extends ConsumerState<RecoveryScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
 
@@ -56,20 +60,29 @@ class _RecoveryScreenState extends State<RecoveryScreen> {
 
     setState(() => _isSubmitting = true);
 
-    // TODO: Integrate real password-reset logic here, e.g.:
-    // await AuthService.sendPasswordResetEmail(_emailController.text.trim());
-    await Future.delayed(const Duration(milliseconds: 900));
-
-    if (!mounted) return;
-    setState(() => _isSubmitting = false);
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Reset link sent to ${_emailController.text.trim()}'),
-        backgroundColor: _primaryBlue,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    try {
+      await ref
+          .read(authRepositoryProvider)
+          .sendPasswordReset(email: _emailController.text.trim());
+      if (!mounted) return;
+      setState(() => _isSubmitting = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Reset link sent to ${_emailController.text.trim()}'),
+          backgroundColor: _primaryBlue,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } catch (err) {
+      if (!mounted) return;
+      setState(() => _isSubmitting = false);
+      final message = (err is FirebaseAuthException)
+          ? err.message ?? 'Failed to send reset email'
+          : 'Failed to send reset email';
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
+    }
   }
 
   void _handleBackToSignIn() {

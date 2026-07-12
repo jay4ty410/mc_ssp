@@ -33,6 +33,9 @@
 // ---------------------------------------------------------------------------
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mc_ssp/providers/repository_providers.dart' as app_providers;
+import 'package:mc_ssp/providers/firebase_providers.dart' as app_firebase;
 import 'package:mc_ssp/core/widgets/app_bottom_navigation_bar.dart';
 import 'package:mc_ssp/features/authentication/presentation/pages/home_screen.dart'
     show HomeScreen;
@@ -231,20 +234,16 @@ class _CategoryStyle {
 /// ============================================================================
 /// CALENDAR SCREEN
 /// ============================================================================
-class CalendarScreen extends StatefulWidget {
+class CalendarScreen extends ConsumerStatefulWidget {
   const CalendarScreen({super.key});
 
   @override
-  State<CalendarScreen> createState() => _CalendarScreenState();
+  ConsumerState<CalendarScreen> createState() => _CalendarScreenState();
 }
 
-class _CalendarScreenState extends State<CalendarScreen> {
+class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   late DateTime _focusedMonth;
   late DateTime _selectedDate;
-
-  /// Keyed by 'yyyy-M-d'. Replace with a real data source in production.
-  late final Map<String, List<CalendarEvent>> _eventsByDay;
-
   static const List<String> _weekdayLabels = [
     'Sun',
     'Mon',
@@ -258,59 +257,60 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   void initState() {
     super.initState();
-    _selectedDate = DateTime(2025, 5, 21);
-    _focusedMonth = DateTime(2025, 5, 1);
-    _eventsByDay = _buildSampleEvents();
+    _selectedDate = DateTime.now();
+    _focusedMonth = DateTime(_selectedDate.year, _selectedDate.month, 1);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userId = ref
+          .read(app_firebase.firebaseAuthProvider)
+          .currentUser
+          ?.uid;
+      if (userId != null) {
+        ref
+            .read(app_providers.calendarControllerProvider.notifier)
+            .loadForMonth(userId, _focusedMonth);
+      }
+    });
   }
 
   String _keyFor(DateTime d) => '${d.year}-${d.month}-${d.day}';
 
-  Map<String, List<CalendarEvent>> _buildSampleEvents() {
+  Map<String, List<CalendarEvent>> _buildEventsByDayFromModels(List events) {
     final data = <String, List<CalendarEvent>>{};
-
-    // Days in May 2025 that carry an event dot in the reference design.
-    const dotDays = [1, 5, 7, 10, 11, 13, 16, 18, 21, 22, 24, 25, 27, 29, 31];
-    for (final day in dotDays) {
-      data[_keyFor(DateTime(2025, 5, day))] = [
-        CalendarEvent(
-          title: 'Event',
-          start: const TimeOfDay(hour: 9, minute: 0),
-          end: const TimeOfDay(hour: 10, minute: 0),
-          category: EventCategory.work,
-        ),
-      ];
+    for (final e in events) {
+      // e is EventModel from repository
+      try {
+        final start = e.startDateTime as DateTime;
+        final end = e.endDateTime as DateTime;
+        final dayKey = _keyFor(DateTime(start.year, start.month, start.day));
+        final category = _mapEventTypeToCategory(e.eventType);
+        final calEvent = CalendarEvent(
+          title: e.title,
+          start: TimeOfDay(hour: start.hour, minute: start.minute),
+          end: TimeOfDay(hour: end.hour, minute: end.minute),
+          category: category,
+        );
+        data.putIfAbsent(dayKey, () => []).add(calEvent);
+      } catch (_) {
+        // ignore malformed event
+      }
     }
-
-    // The selected day gets the full, specific agenda from the design.
-    data[_keyFor(DateTime(2025, 5, 21))] = [
-      const CalendarEvent(
-        title: 'Math Study Session',
-        start: TimeOfDay(hour: 10, minute: 0),
-        end: TimeOfDay(hour: 11, minute: 30),
-        category: EventCategory.study,
-      ),
-      const CalendarEvent(
-        title: 'Gym Workout',
-        start: TimeOfDay(hour: 17, minute: 0),
-        end: TimeOfDay(hour: 18, minute: 0),
-        category: EventCategory.health,
-      ),
-      const CalendarEvent(
-        title: 'Project Planning',
-        start: TimeOfDay(hour: 19, minute: 0),
-        end: TimeOfDay(hour: 20, minute: 0),
-        category: EventCategory.work,
-      ),
-    ];
-
     return data;
   }
 
-  List<CalendarEvent> get _selectedDayEvents =>
-      _eventsByDay[_keyFor(_selectedDate)] ?? const [];
+  EventCategory _mapEventTypeToCategory(String? type) {
+    final t = (type ?? '').toLowerCase();
+    if (t.contains('study') || t.contains('study')) return EventCategory.study;
+    if (t.contains('health') || t.contains('gym') || t.contains('fitness'))
+      return EventCategory.health;
+    return EventCategory.work;
+  }
 
-  bool _hasEvents(DateTime day) =>
-      (_eventsByDay[_keyFor(day)] ?? const []).isNotEmpty;
+  List<CalendarEvent> _selectedDayEventsFromMap(
+    Map<String, List<CalendarEvent>> map,
+  ) => map[_keyFor(_selectedDate)] ?? const [];
+
+  bool _hasEventsFromMap(Map<String, List<CalendarEvent>> map, DateTime day) =>
+      (map[_keyFor(day)] ?? const []).isNotEmpty;
 
   bool _isSameDay(DateTime a, DateTime b) =>
       a.year == b.year && a.month == b.month && a.day == b.day;
@@ -430,7 +430,16 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                 focusedMonth: _focusedMonth,
                                 selectedDate: _selectedDate,
                                 colors: colors,
-                                hasEvents: _hasEvents,
+                                hasEvents: (day) {
+                                  final state = ref.watch(
+                                    app_providers.calendarControllerProvider,
+                                  );
+                                  final events = state.events;
+                                  final map = _buildEventsByDayFromModels(
+                                    events,
+                                  );
+                                  return _hasEventsFromMap(map, day);
+                                },
                                 isSameDay: _isSameDay,
                                 onSelectDay: _selectDate,
                               ),
@@ -448,26 +457,65 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           ),
                         ),
                       ),
-                      if (_selectedDayEvents.isEmpty)
-                        SliverToBoxAdapter(
-                          child: _EmptyEventsState(colors: colors),
-                        )
-                      else
-                        SliverPadding(
-                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
-                          sliver: SliverList.separated(
-                            itemCount: _selectedDayEvents.length,
-                            separatorBuilder: (_, _) =>
-                                const SizedBox(height: 12),
-                            itemBuilder: (context, index) {
-                              return _EventCard(
-                                event: _selectedDayEvents[index],
-                                colors: colors,
-                                onTap: () {},
-                              );
-                            },
-                          ),
-                        ),
+                      Builder(
+                        builder: (context) {
+                          final state = ref.watch(
+                            app_providers.calendarControllerProvider,
+                          );
+                          final events = state.events;
+                          final map = _buildEventsByDayFromModels(events);
+                          final selectedEvents = _selectedDayEventsFromMap(map);
+
+                          if (state.isLoading) {
+                            return SliverToBoxAdapter(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 24,
+                                ),
+                                alignment: Alignment.center,
+                                child: const CircularProgressIndicator(),
+                              ),
+                            );
+                          }
+
+                          if (state.error != null) {
+                            return SliverToBoxAdapter(
+                              child: Padding(
+                                padding: const EdgeInsets.all(24),
+                                child: Text(
+                                  state.error!,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    color: Colors.redAccent,
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+
+                          if (selectedEvents.isEmpty) {
+                            return SliverToBoxAdapter(
+                              child: _EmptyEventsState(colors: colors),
+                            );
+                          }
+
+                          return SliverPadding(
+                            padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
+                            sliver: SliverList.separated(
+                              itemCount: selectedEvents.length,
+                              separatorBuilder: (_, _) =>
+                                  const SizedBox(height: 12),
+                              itemBuilder: (context, index) {
+                                return _EventCard(
+                                  event: selectedEvents[index],
+                                  colors: colors,
+                                  onTap: () {},
+                                );
+                              },
+                            ),
+                          );
+                        },
+                      ),
                     ],
                   ),
                 ),

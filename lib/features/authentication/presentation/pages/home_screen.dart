@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mc_ssp/providers/repository_providers.dart';
+import 'package:mc_ssp/providers/firebase_providers.dart';
+import 'package:mc_ssp/features/authentication/repositories/user_repository.dart';
+import 'package:mc_ssp/features/authentication/models/user_model.dart';
 import 'package:mc_ssp/core/widgets/app_bottom_navigation_bar.dart';
 import 'package:mc_ssp/features/calendar.dart' show CalendarScreen;
 import 'package:mc_ssp/features/profile.dart' show ProfileScreen;
@@ -6,11 +11,11 @@ import 'package:mc_ssp/features/task_list.dart' show TaskListScreen;
 import 'package:mc_ssp/features/authentication/presentation/pages/routine.dart'
     show RoutineScreen;
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       backgroundColor: const Color(0xFFF3F5FB),
       body: SafeArea(
@@ -20,9 +25,9 @@ class HomeScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 12),
-              _buildTopBar(),
+              _buildTopBar(ref),
               const SizedBox(height: 20),
-              _buildGreetingHeader(),
+              _buildGreetingHeader(ref),
               const SizedBox(height: 20),
               _buildStatsCard(),
               const SizedBox(height: 20),
@@ -99,7 +104,7 @@ class HomeScreen extends StatelessWidget {
   // ---------------------------------------------------------------------
   // TOP BAR: Logo + Notification Bell + Profile Avatar
   // ---------------------------------------------------------------------
-  Widget _buildTopBar() {
+  Widget _buildTopBar(WidgetRef ref) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -186,32 +191,73 @@ class HomeScreen extends StatelessWidget {
   // ---------------------------------------------------------------------
   // GREETING HEADER
   // ---------------------------------------------------------------------
-  Widget _buildGreetingHeader() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Text(
-                'Good morning, NoBody 👋',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+  Widget _buildGreetingHeader(WidgetRef ref) {
+    final userId = ref.read(firebaseAuthProvider).currentUser?.uid;
+    if (userId == null) {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text(
+                  'Good morning, NoBody 👋',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
                 ),
-              ),
-              SizedBox(height: 4),
-              Text(
-                "Here's your schedule overview",
-                style: TextStyle(fontSize: 14, color: Colors.black54),
-              ),
-            ],
+                SizedBox(height: 4),
+                Text(
+                  "Here's your schedule overview",
+                  style: TextStyle(fontSize: 14, color: Colors.black54),
+                ),
+              ],
+            ),
           ),
-        ),
-        _buildTodayDropdown(),
-      ],
+          _buildTodayDropdown(),
+        ],
+      );
+    }
+
+    final userFuture = ref.read(userRepositoryProvider).getUser(userId);
+
+    return FutureBuilder<UserModel?>(
+      future: userFuture,
+      builder: (context, snapshot) {
+        final displayName = snapshot.data?.displayName ?? 'NoBody';
+        final subtitle =
+            snapshot.data?.email ?? "Here's your schedule overview";
+
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Good morning, $displayName 👋',
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(fontSize: 14, color: Colors.black54),
+                  ),
+                ],
+              ),
+            ),
+            _buildTodayDropdown(),
+          ],
+        );
+      },
     );
   }
 

@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class ReminderModel {
   final String id;
 
@@ -66,31 +68,99 @@ class ReminderModel {
     );
   }
 
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'title': title,
+      'description': description,
+      'reminderDateTime': Timestamp.fromDate(reminderTime),
+      'taskId': taskId,
+      'noteId': noteId,
+      'repeat': repeat,
+      'completed': isCompleted,
+      'notificationEnabled': notificationEnabled,
+      'createdAt': Timestamp.fromDate(createdAt),
+    };
+  }
+
   Map<String, dynamic> toJson() => {
     'id': id,
     'title': title,
     'description': description,
-    'reminderTime': reminderTime.toIso8601String(),
+    'reminderDateTime': reminderTime.toIso8601String(),
     'taskId': taskId,
     'noteId': noteId,
     'repeat': repeat,
-    'isCompleted': isCompleted,
+    'completed': isCompleted,
     'notificationEnabled': notificationEnabled,
     'createdAt': createdAt.toIso8601String(),
   };
 
   factory ReminderModel.fromJson(Map<String, dynamic> json) {
+    DateTime? parseDateTime(Object? value) {
+      if (value is Timestamp) {
+        return value.toDate();
+      }
+      if (value is String) {
+        return DateTime.tryParse(value);
+      }
+      return null;
+    }
+
     return ReminderModel(
-      id: json['id'],
-      title: json['title'],
-      description: json['description'],
-      reminderTime: DateTime.parse(json['reminderTime']),
-      taskId: json['taskId'],
-      noteId: json['noteId'],
-      repeat: json['repeat'] ?? 'none',
-      isCompleted: json['isCompleted'] ?? false,
+      id: json['id']?.toString() ?? '',
+      title: json['title']?.toString() ?? '',
+      description: json['description']?.toString(),
+      reminderTime:
+          parseDateTime(json['reminderDateTime'] ?? json['reminderTime']) ??
+          DateTime.now(),
+      taskId: json['taskId']?.toString(),
+      noteId: json['noteId']?.toString(),
+      repeat: json['repeat']?.toString() ?? 'none',
+      isCompleted: json['completed'] ?? json['isCompleted'] ?? false,
       notificationEnabled: json['notificationEnabled'] ?? true,
-      createdAt: DateTime.parse(json['createdAt']),
+      createdAt: parseDateTime(json['createdAt']) ?? DateTime.now(),
     );
+  }
+
+  factory ReminderModel.fromMap(Map<String, dynamic> map) {
+    DateTime? parseDateTime(Object? value) {
+      if (value is Timestamp) {
+        return value.toDate();
+      }
+      if (value is String) {
+        return DateTime.tryParse(value);
+      }
+      return null;
+    }
+
+    return ReminderModel(
+      id: map['id']?.toString() ?? '',
+      title: map['title']?.toString() ?? '',
+      description: map['description']?.toString(),
+      reminderTime:
+          parseDateTime(map['reminderDateTime'] ?? map['reminderTime']) ??
+          DateTime.now(),
+      taskId: map['taskId']?.toString(),
+      noteId: map['noteId']?.toString(),
+      repeat: map['repeat']?.toString() ?? 'none',
+      isCompleted: map['completed'] ?? map['isCompleted'] ?? false,
+      notificationEnabled: map['notificationEnabled'] ?? true,
+      createdAt: parseDateTime(map['createdAt']) ?? DateTime.now(),
+    );
+  }
+
+  static ReminderModel fromFirestore(
+    DocumentSnapshot<Map<String, dynamic>> snapshot,
+    SnapshotOptions? options,
+  ) {
+    return ReminderModel.fromMap(snapshot.data() ?? {});
+  }
+
+  static Map<String, Object?> toFirestore(
+    ReminderModel model,
+    SetOptions? options,
+  ) {
+    return model.toMap();
   }
 }

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mc_ssp/providers/repository_providers.dart';
-import 'package:mc_ssp/providers/firebase_providers.dart';
-import 'package:mc_ssp/features/authentication/repositories/user_repository.dart';
-import 'package:mc_ssp/features/authentication/models/user_model.dart';
+import 'package:mc_ssp/features/authentication/data/user_service.dart';
+import 'package:mc_ssp/core/utils/greeting_utils.dart';
 import 'package:mc_ssp/core/widgets/app_bottom_navigation_bar.dart';
 import 'package:mc_ssp/features/calendar.dart' show CalendarScreen;
 import 'package:mc_ssp/features/profile.dart' show ProfileScreen;
@@ -192,44 +191,25 @@ class HomeScreen extends ConsumerWidget {
   // GREETING HEADER
   // ---------------------------------------------------------------------
   Widget _buildGreetingHeader(WidgetRef ref) {
-    final userId = ref.read(firebaseAuthProvider).currentUser?.uid;
-    if (userId == null) {
-      return Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text(
-                  'Good morning, NoBody 👋',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  "Here's your schedule overview",
-                  style: TextStyle(fontSize: 14, color: Colors.black54),
-                ),
-              ],
-            ),
-          ),
-          _buildTodayDropdown(),
-        ],
-      );
-    }
+    // Use the dedicated UserService to fetch profile info and GreetingUtils for time-based greeting
+    final userService = ref.read(userServiceProvider);
 
-    final userFuture = ref.read(userRepositoryProvider).getUser(userId);
-
-    return FutureBuilder<UserModel?>(
-      future: userFuture,
+    return FutureBuilder<Map<String, dynamic>?>(
+      future: userService.getCurrentUserProfile(),
       builder: (context, snapshot) {
-        final displayName = snapshot.data?.displayName ?? 'NoBody';
-        final subtitle =
-            snapshot.data?.email ?? "Here's your schedule overview";
+        final profile = snapshot.data;
+
+        final title = profile?['title']?.toString() ?? '';
+        final firstName =
+            profile?['firstName']?.toString() ??
+            profile?['displayName']?.toString() ??
+            'NoBody';
+
+        final greetingPrefix = GreetingUtils.getGreeting();
+        final greeting =
+            '$greetingPrefix, ${title.isNotEmpty ? '$title ' : ''}$firstName';
+
+        final subtitle = profile?['email'] ?? "Here's your schedule overview";
 
         return Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -239,7 +219,7 @@ class HomeScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Good morning, $displayName 👋',
+                    '$greeting 👋',
                     style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,

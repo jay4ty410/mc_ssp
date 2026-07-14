@@ -4,6 +4,7 @@ import '../features/authentication/repositories/auth_repository.dart';
 import '../features/authentication/repositories/profile_repository.dart';
 import '../features/authentication/repositories/user_repository.dart';
 import '../features/authentication/services/user_auth_service.dart';
+import '../features/authentication/data/user_service.dart';
 import '../features/calendar/repositories/calendar_repository.dart';
 import '../features/calendar/repositories/note_repository.dart';
 import '../features/calendar/repositories/reminder_repository.dart';
@@ -69,6 +70,12 @@ final userAuthServiceProvider = Provider<UserAuthService>((ref) {
 final userRepositoryProvider = Provider<UserRepository>((ref) {
   final firestore = ref.read(firestoreProvider);
   return UserRepository(firestore: firestore);
+});
+
+final userServiceProvider = Provider<UserService>((ref) {
+  final firestore = ref.read(firestoreProvider);
+  // Provide FirebaseAuth.instance indirectly via service constructor default
+  return UserService(firestore: firestore);
 });
 
 final profileRepositoryProvider = Provider<ProfileRepository>((ref) {

@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../models/user_model.dart';
@@ -17,6 +19,15 @@ class UserAuthService {
     String? displayName,
   }) async {
     try {
+      developer.log(
+        'SignUp started for email=$email',
+        name: 'UserAuthService.signUp',
+      );
+
+      developer.log(
+        'Creating auth account for email=$email',
+        name: 'UserAuthService.signUp',
+      );
       final credential = await _auth.createUserWithEmailAndPassword(
         email: email.trim(),
         password: password,
@@ -24,8 +35,17 @@ class UserAuthService {
 
       final user = credential.user;
       if (user == null) {
+        developer.log(
+          'Auth account created but user object is null',
+          name: 'UserAuthService.signUp',
+        );
         return 'Registration failed. Please try again.';
       }
+
+      developer.log(
+        'Auth account created: uid=${user.uid}, email=${user.email}',
+        name: 'UserAuthService.signUp',
+      );
 
       final newUser = UserModel(
         uid: user.uid,
@@ -37,11 +57,29 @@ class UserAuthService {
         updatedAt: DateTime.now(),
       );
 
+      developer.log(
+        'Creating Firestore user document for uid=${user.uid}',
+        name: 'UserAuthService.signUp',
+      );
       await _userRepository.createUser(newUser);
+      developer.log(
+        'Successfully created Firestore user document for uid=${user.uid}',
+        name: 'UserAuthService.signUp',
+      );
       return null;
     } on FirebaseAuthException catch (e) {
+      developer.log(
+        'FirebaseAuthException during signUp: ${e.code} - ${e.message}',
+        name: 'UserAuthService.signUp',
+        error: e,
+      );
       return _mapAuthError(e);
     } catch (e) {
+      developer.log(
+        'Unexpected error during signUp: $e',
+        name: 'UserAuthService.signUp',
+        error: e,
+      );
       return 'Unexpected error during sign up: $e';
     }
   }
@@ -51,23 +89,59 @@ class UserAuthService {
     required String password,
   }) async {
     try {
+      developer.log(
+        'SignIn started for email=$email',
+        name: 'UserAuthService.signIn',
+      );
+
+      developer.log(
+        'Authenticating with Firebase Auth for email=$email',
+        name: 'UserAuthService.signIn',
+      );
       await _auth.signInWithEmailAndPassword(
         email: email.trim(),
         password: password,
       );
+
+      developer.log(
+        'Successfully authenticated: uid=${_auth.currentUser?.uid}',
+        name: 'UserAuthService.signIn',
+      );
       return null;
     } on FirebaseAuthException catch (e) {
+      developer.log(
+        'FirebaseAuthException during signIn: ${e.code} - ${e.message}',
+        name: 'UserAuthService.signIn',
+        error: e,
+      );
       return _mapAuthError(e);
     } catch (e) {
+      developer.log(
+        'Unexpected error during signIn: $e',
+        name: 'UserAuthService.signIn',
+        error: e,
+      );
       return 'Unexpected error during sign in: $e';
     }
   }
 
   Future<String?> signOut() async {
     try {
+      developer.log(
+        'SignOut started for uid=${_auth.currentUser?.uid}',
+        name: 'UserAuthService.signOut',
+      );
+
       await _auth.signOut();
+
+      developer.log('Successfully signed out', name: 'UserAuthService.signOut');
       return null;
     } catch (e) {
+      developer.log(
+        'Unexpected error during signOut: $e',
+        name: 'UserAuthService.signOut',
+        error: e,
+      );
       return 'Unexpected error during sign out: $e';
     }
   }
